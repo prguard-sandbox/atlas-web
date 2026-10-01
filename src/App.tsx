@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { getUsers, listProjects } from "./api";
 import { ProjectCard } from "./components/ProjectCard";
+import { SearchPage } from "./pages/SearchPage";
 import type { Project, User } from "./types";
 
 export function App() {
+  const [tab, setTab] = useState<"all" | "search">("all");
   const [projects, setProjects] = useState<Project[]>([]);
   const [owners, setOwners] = useState<Map<string, User>>(new Map());
   const [error, setError] = useState<string | null>(null);
@@ -28,10 +30,24 @@ export function App() {
 
   return (
     <main>
-      <h1>Projects</h1>
-      {projects.map((p) => (
-        <ProjectCard key={p.id} project={p} owner={owners.get(p.ownerId)} />
-      ))}
+      <nav>
+        <button aria-pressed={tab === "all"} onClick={() => setTab("all")}>
+          All projects
+        </button>
+        <button aria-pressed={tab === "search"} onClick={() => setTab("search")}>
+          Search
+        </button>
+      </nav>
+      {tab === "search" ? (
+        <SearchPage />
+      ) : (
+        <>
+          <h1>Projects</h1>
+          {projects.map((p) => (
+            <ProjectCard key={p.id} project={p} owner={owners.get(p.ownerId)} />
+          ))}
+        </>
+      )}
     </main>
   );
 }
